@@ -233,7 +233,7 @@ def get_issues():
             "user_name": row[1],
             "title": row[2],
             "description": row[3],
-            "image_url": f"http://10.16.236.220:8000/{row[4]}" if row[4] else "",
+            "image_url": f"https://my-backend-4hfj.onrender.com/{row[4]}" if row[4] else "",
             "category": row[5],
             "location": row[6],
             "latitude": row[7],
