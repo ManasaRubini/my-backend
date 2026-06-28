@@ -229,20 +229,22 @@ def get_issues():
 
     return [
         {
-            "id": row["id"],
-            "user_name": row["user_name"],
-            "title": row["title"],
-            "description": row["description"],
-            "image_url": row["image_url"],
-            "category": row["category"],
-            "location": row["location"],
-            "latitude": row["latitude"],
-            "longitude": row["longitude"],
-            "anonymous": bool(row["anonymous"]),
-            "upvotes": row["upvotes"]
+            "id": row[0],
+            "user_name": row[1],
+            "title": row[2],
+            "description": row[3],
+            "image_url": f"https://my-backend-4hfj.onrender.com/{row[4]}" if row[4] else "",
+            "category": row[5],
+            "location": row[6],
+            "latitude": row[7],
+            "longitude": row[8],
+            "anonymous": bool(row[9]),
+            "upvotes": row[10],
+            "status": row[11]
         }
         for row in rows
     ]
+
 
 @app.get("/issues/nearby")
 def get_nearby_issues(lat: float, lng: float, radius_km: float = 5):
