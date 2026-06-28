@@ -88,58 +88,82 @@ def nearby(type: str, lat: float, lon: float, radius_km: float = 10):
     tag = tag_map.get(type, "amenity=hospital")
     k, v = tag.split("=")
 
-    # ✅ REAL radius search (NO bounding box)
     query = f"""
     [out:json][timeout:25];
     (
       node["{k}"="{v}"](around:{radius_km * 1000},{lat},{lon});
       way["{k}"="{v}"](around:{radius_km * 1000},{lat},{lon});
-      relation["{k}"="{v}"](around:{radius_km * 1000},{lat},{lon});
     );
     out center;
     """
 
     try:
         headers = {
-            "User-Agent": "LocalPulse/1.0 (contact@example.com)"
+            "User-Agent": "LocalPulse/1.0",
+            "Accept": "application/json"
         }
 
         res = requests.post(
             "https://overpass-api.de/api/interpreter",
             data={"data": query},
             headers=headers,
-            timeout=15
+            timeout=20
         )
 
-        data = res.json()
+        # 🚨 STEP 1: CHECK HTTP STATUS
+        if res.status_code != 200:
+            return {
+                "error": "Overpass API failed",
+                "status_code": res.status_code,
+                "response": res.text[:300]
+            }
+
+        # 🚨 STEP 2: CHECK IF JSON
+        if "json" not in res.headers.get("Content-Type", ""):
+            return {
+                "error": "Non-JSON response from Overpass",
+                "preview": res.text[:300]
+            }
+
+        try:
+            data = res.json()
+        except Exception:
+            return {
+                "error": "JSON parse failed",
+                "preview": res.text[:300]
+            }
 
         result = []
 
         for e in data.get("elements", []):
-            lat2 = e.get("lat") or e.get("center", {}).get("lat")
-            lon2 = e.get("lon") or e.get("center", {}).get("lon")
 
-            if lat2 and lon2:
-                dist = haversine_km(lat, lon, lat2, lon2)
+            lat2 = e.get("lat") or (e.get("center") or {}).get("lat")
+            lon2 = e.get("lon") or (e.get("center") or {}).get("lon")
 
-                if dist <= radius_km:
-                    result.append({
-                        "lat": lat2,
-                        "lon": lon2,
-                        "name": e.get("tags", {}).get("name", "Unknown"),
-                        "type": type,   # ✅ ADD THIS (CRITICAL FOR ICONS)
-                        "distance_km": round(dist, 2)
-                    })
+            if lat2 is None or lon2 is None:
+                continue
 
-        # sort nearest first
+            dist = haversine_km(lat, lon, lat2, lon2)
+
+            if dist <= radius_km:
+                result.append({
+                    "lat": float(lat2),
+                    "lon": float(lon2),
+                    "name": e.get("tags", {}).get("name", "Unknown"),
+                    "type": type,
+                    "distance_km": round(dist, 2)
+                })
+
         result.sort(key=lambda x: x["distance_km"])
 
-        cache[key] = result[:50]  # limit results
+        cache[key] = result[:50]
+
         return cache[key]
 
     except Exception as e:
-        return {"error": str(e)}
-    
+        return {
+            "error": str(e)
+        }
 # =========================================================
 # 🆕 SEARCH API (USED BY SEARCH BAR IN FLUTTER)
 # =========================================================
