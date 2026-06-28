@@ -70,9 +70,9 @@ app.mount(
 # 🆕 NEARBY API (USED BY FLUTTER EXPLORE + CLUSTERING)
 # =========================================================
 @app.get("/nearby")
-def nearby(type: str, lat: float, lon: float):
+def nearby(type: str, lat: float, lon: float, radius_km: float = 10):
 
-    key = f"{type}-{lat}-{lon}"
+    key = f"{type}-{round(lat, 3)}-{round(lon, 3)}-{radius_km}"
 
     if key in cache:
         return cache[key]
@@ -85,17 +85,20 @@ def nearby(type: str, lat: float, lon: float):
         "waste": "amenity=waste_disposal"
     }
 
-    tag = "amenity=hospital"
+    tag = tag_map.get(type, "amenity=hospital")
+    k, v = tag.split("=")
 
+    # ✅ REAL radius search (NO bounding box)
     query = f"""
     [out:json][timeout:25];
     (
-    node["amenity"="hospital"]({lat-0.1},{lon-0.1},{lat+0.1},{lon+0.1});
-    way["amenity"="hospital"]({lat-0.1},{lon-0.1},{lat+0.1},{lon+0.1});
-    relation["amenity"="hospital"]({lat-0.1},{lon-0.1},{lat+0.1},{lon+0.1});
+      node["{k}"="{v}"](around:{radius_km * 1000},{lat},{lon});
+      way["{k}"="{v}"](around:{radius_km * 1000},{lat},{lon});
+      relation["{k}"="{v}"](around:{radius_km * 1000},{lat},{lon});
     );
     out center;
     """
+
     try:
         headers = {
             "User-Agent": "LocalPulse/1.0 (contact@example.com)"
@@ -107,31 +110,35 @@ def nearby(type: str, lat: float, lon: float):
             headers=headers,
             timeout=15
         )
-        print("STATUS:", res.status_code)
-        print("RESPONSE:", res.text[:300])
 
         data = res.json()
 
         result = []
 
-        for e in data["elements"]:
+        for e in data.get("elements", []):
             lat2 = e.get("lat") or e.get("center", {}).get("lat")
             lon2 = e.get("lon") or e.get("center", {}).get("lon")
 
             if lat2 and lon2:
-                result.append({
-                    "lat": lat2,
-                    "lon": lon2,
-                    "name": e.get("tags", {}).get("name", "Unknown")
-                })
+                dist = haversine_km(lat, lon, lat2, lon2)
 
-        cache[key] = result
-        return result
+                if dist <= radius_km:
+                    result.append({
+                        "lat": lat2,
+                        "lon": lon2,
+                        "name": e.get("tags", {}).get("name", "Unknown"),
+                        "distance_km": round(dist, 2)
+                    })
 
-    except Exception:
-        return []
+        # sort nearest first
+        result.sort(key=lambda x: x["distance_km"])
 
+        cache[key] = result[:50]  # limit results
+        return cache[key]
 
+    except Exception as e:
+        return {"error": str(e)}
+    
 # =========================================================
 # 🆕 SEARCH API (USED BY SEARCH BAR IN FLUTTER)
 # =========================================================
