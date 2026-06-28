@@ -4,35 +4,35 @@ conn = sqlite3.connect("localpulse.db")
 cursor = conn.cursor()
 
 issues = [
-    ('Manass','Large Pothole Near Bus Stand','Huge pothole causing accidents.','https://my-backend-4hfj.onrender.com/uploads/pothole1.jpg','Road','Coimbatore',11.0168,76.9558,0,52,'Open','2026-06-26 08:10:00'),
+    ('Manass','Large Pothole Near Bus Stand','Huge pothole causing accidents.','uploads/pothole1.jpg','Road','Coimbatore',11.0168,76.9558,0,52,'Open','2026-06-26 08:10:00'),
 
-    ('Lavanya','Broken Street Light','Street light not working for three nights.','https://my-backend-4hfj.onrender.com/uploads/light1.jpg','Electricity','Peelamedu',11.0281,76.9890,0,38,'Open','2026-06-25 18:20:00'),
+    ('Lavanya','Broken Street Light','Street light not working for three nights.','uploads/light1.jpg','Electricity','Peelamedu',11.0281,76.9890,0,38,'Open','2026-06-25 18:20:00'),
 
-    ('Arjun','Garbage Overflow','Dustbin overflowing and spreading bad smell.','https://my-backend-4hfj.onrender.com/uploads/garbage1.jpg','Garbage','Peelamedu',11.0205,76.9991,0,61,'Open','2026-06-25 09:00:00'),
+    ('Arjun','Garbage Overflow','Dustbin overflowing and spreading bad smell.','uploads/garbage1.jpg','Garbage','Peelamedu',11.0205,76.9991,0,61,'Open','2026-06-25 09:00:00'),
 
-    ('Keerthi','Water Leakage','Pipeline leaking continuously.','https://my-backend-4hfj.onrender.com/uploads/water1.jpg','Water','RS Puram',11.0084,76.9445,0,45,'Resolved','2026-06-24 11:00:00'),
+    ('Keerthi','Water Leakage','Pipeline leaking continuously.','uploads/water1.jpg','Water','RS Puram',11.0084,76.9445,0,45,'Resolved','2026-06-24 11:00:00'),
 
-    ('Rahul','Damaged Footpath','Footpath broken making walking difficult.','https://my-backend-4hfj.onrender.com/uploads/footpath.jpg','Road','Gandhipuram',11.0179,76.9672,0,24,'Open','2026-06-24 16:20:00'),
+    ('Rahul','Damaged Footpath','Footpath broken making walking difficult.','uploads/footpath.jpg','Road','Gandhipuram',11.0179,76.9672,0,24,'Open','2026-06-24 16:20:00'),
 
-    ('Divya','Open Drain','Drain left uncovered near school.','https://my-backend-4hfj.onrender.com/uploads/drain.jpg','Health','Saibaba Colony',11.0265,76.9398,1,72,'Open','2026-06-23 09:45:00'),
+    ('Divya','Open Drain','Drain left uncovered near school.','uploads/drain.jpg','Health','Saibaba Colony',11.0265,76.9398,1,72,'Open','2026-06-23 09:45:00'),
 
-    ('Sanjay','Illegal Garbage Dump','People dumping waste every night.','https://my-backend-4hfj.onrender.com/uploads/garbage2.jpg','Garbage','Singanallur',11.0009,77.0260,0,54,'Open','2026-06-23 12:40:00'),
+    ('Sanjay','Illegal Garbage Dump','People dumping waste every night.','uploads/garbage2.jpg','Garbage','Singanallur',11.0009,77.0260,0,54,'Open','2026-06-23 12:40:00'),
 
-    ('Priya','Transformer Sparks','Transformer producing sparks.','https://my-backend-4hfj.onrender.com/uploads/transformer.jpg','Electricity','Saravanampatti',11.0822,76.9963,0,67,'Open','2026-06-22 20:15:00'),
+    ('Priya','Transformer Sparks','Transformer producing sparks.','uploads/transformer.jpg','Electricity','Saravanampatti',11.0822,76.9963,0,67,'Open','2026-06-22 20:15:00'),
 
-    ('Karthik','Water Logging','Rainwater stagnant for two days.','https://my-backend-4hfj.onrender.com/uploads/water2.jpg','Water','Town Hall',10.9951,76.9613,0,29,'Resolved','2026-06-22 07:50:00'),
+    ('Karthik','Water Logging','Rainwater stagnant for two days.','uploads/water2.jpg','Water','Town Hall',10.9951,76.9613,0,29,'Resolved','2026-06-22 07:50:00'),
 
-    ('Meena','Hospital Waste','Medical waste dumped near road.','https://my-backend-4hfj.onrender.com/uploads/health1.jpg','Health','Ukkadam',10.9898,76.9554,0,81,'Open','2026-06-21 14:10:00'),
+    ('Meena','Hospital Waste','Medical waste dumped near road.','uploads/health1.jpg','Health','Ukkadam',10.9898,76.9554,0,81,'Open','2026-06-21 14:10:00'),
 
-    ('Ajay','Broken Traffic Signal','Traffic signal stopped working.','https://my-backend-4hfj.onrender.com/uploads/signal.jpg','Road','Hope College',11.0274,77.0312,0,43,'Open','2026-06-21 09:25:00'),
+    ('Ajay','Broken Traffic Signal','Traffic signal stopped working.','uploads/signal.jpg','Road','Hope College',11.0274,77.0312,0,43,'Open','2026-06-21 09:25:00'),
 
-    ('Anitha','Water Supply Issue','No drinking water for two days.','https://my-backend-4hfj.onrender.com/uploads/water3.jpg','Water','Race Course',11.0025,76.9706,0,56,'Open','2026-06-20 10:30:00'),
+    ('Anitha','Water Supply Issue','No drinking water for two days.','uploads/water3.jpg','Water','Race Course',11.0025,76.9706,0,56,'Open','2026-06-20 10:30:00'),
 
-    ('Vikram','Electric Pole Leaning','Pole leaning dangerously after rain.','https://my-backend-4hfj.onrender.com/uploads/pole.jpg','Electricity','Kuniamuthur',10.9644,76.9508,0,33,'Open','2026-06-20 18:45:00'),
+    ('Vikram','Electric Pole Leaning','Pole leaning dangerously after rain.','uploads/pole.jpg','Electricity','Kuniamuthur',10.9644,76.9508,0,33,'Open','2026-06-20 18:45:00'),
 
-    ('Sneha','Park Needs Cleaning','Garbage scattered inside public park.','https://my-backend-4hfj.onrender.com/uploads/park.jpg','Garbage','Vadavalli',11.0426,76.8968,1,19,'Resolved','2026-06-19 17:00:00'),
+    ('Sneha','Park Needs Cleaning','Garbage scattered inside public park.','uploads/park.jpg','Garbage','Vadavalli',11.0426,76.8968,1,19,'Resolved','2026-06-19 17:00:00'),
 
-    ('Harish','Mosquito Breeding','Standing water causing mosquito breeding.','https://my-backend-4hfj.onrender.com/uploads/mosquito.jpg','Health','Thudiyalur',11.0819,76.9415,0,77,'Open','2026-06-19 06:40:00'),
+    ('Harish','Mosquito Breeding','Standing water causing mosquito breeding.','uploads/mosquito.jpg','Health','Thudiyalur',11.0819,76.9415,0,77,'Open','2026-06-19 06:40:00'),
 
     ('Nisha','Broken Road Divider','Road divider broken after accident.','','Road','Podanur',10.9622,76.9723,0,31,'Open','2026-06-18 12:20:00'),
 
