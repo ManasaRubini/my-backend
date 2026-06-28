@@ -85,18 +85,17 @@ def nearby(type: str, lat: float, lon: float):
         "waste": "amenity=waste_disposal"
     }
 
-    tag = tag_map.get(type, "amenity=hospital")
+    tag = "amenity=hospital"
 
     query = f"""
-    [out:json];
+    [out:json][timeout:25];
     (
-      node[{tag}]({lat-0.05},{lon-0.05},{lat+0.05},{lon+0.05});
-      way[{tag}]({lat-0.05},{lon-0.05},{lat+0.05},{lon+0.05});
-      relation[{tag}]({lat-0.05},{lon-0.05},{lat+0.05},{lon+0.05});
+    node["amenity"="hospital"]({lat-0.1},{lon-0.1},{lat+0.1},{lon+0.1});
+    way["amenity"="hospital"]({lat-0.1},{lon-0.1},{lat+0.1},{lon+0.1});
+    relation["amenity"="hospital"]({lat-0.1},{lon-0.1},{lat+0.1},{lon+0.1});
     );
     out center;
     """
-
     try:
         headers = {
             "User-Agent": "LocalPulse/1.0 (contact@example.com)"
