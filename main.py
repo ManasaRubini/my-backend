@@ -169,7 +169,13 @@ def search(q: str):
         print("Status:", res.status_code)
         print("Body:", res.text)
 
-        data = res.json()
+        try:
+            data = res.json()
+        except Exception:
+            return {
+                "error": "Overpass API did not return JSON",
+                "raw_response": res.text[:300]
+            }
 
         if not data:
             return {"lat": 0, "lon": 0, "name": ""}
