@@ -249,6 +249,7 @@ def get_issues():
 @app.get("/issues/nearby")
 def get_nearby_issues(lat: float, lng: float, radius_km: float = 5):
 
+    print("User Location:", lat, lng)
     cursor.execute("SELECT * FROM issues")
     rows = cursor.fetchall()
 
@@ -261,7 +262,12 @@ def get_nearby_issues(lat: float, lng: float, radius_km: float = 5):
         distance = haversine_km(lat, lng, row[7], row[8])
 
         print("Distance:", distance)
-
+        print(
+    row[2],
+    row[7],
+    row[8],
+    haversine_km(lat, lng, row[7], row[8])
+)
         if distance <= radius_km:
             nearby.append({
                 "id": row[0],
@@ -391,32 +397,26 @@ def create_event(event: Event):
 
 
 @app.get("/events/nearby")
-def get_nearby_events(lat: float, lng: float, radius_km: float = 5):
+def get_nearby_events():
 
     cursor.execute("SELECT * FROM events")
     rows = cursor.fetchall()
 
-    nearby_events = []
+    events = []
 
     for row in rows:
+        events.append({
+            "id": row[0],
+            "title": row[1],
+            "description": row[2],
+            "category": row[3],
+            "location_name": row[4],
+            "latitude": row[5],
+            "longitude": row[6],
+            "start_time": row[7]
+        })
 
-        distance = haversine_km(lat, lng, row[5], row[6])
-
-        if distance <= radius_km:
-            nearby_events.append({
-                "id": row[0],
-                "title": row[1],
-                "description": row[2],
-                "category": row[3],
-                "location_name": row[4],
-                "latitude": row[5],
-                "longitude": row[6],
-                "start_time": row[7],
-                "distance_km": round(distance, 2)
-            })
-
-    nearby_events.sort(key=lambda x: x["distance_km"])
-    return nearby_events
+    return events
 
 
 @app.get("/events/{event_id}")
