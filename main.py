@@ -127,6 +127,7 @@ def nearby(type: str, lat: float, lon: float, radius_km: float = 10):
                         "lat": lat2,
                         "lon": lon2,
                         "name": e.get("tags", {}).get("name", "Unknown"),
+                        "type": type,   # ✅ ADD THIS (CRITICAL FOR ICONS)
                         "distance_km": round(dist, 2)
                     })
 
