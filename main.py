@@ -70,66 +70,52 @@ app.mount(
 # 🆕 NEARBY API (USED BY FLUTTER EXPLORE + CLUSTERING)
 # =========================================================
 @app.get("/nearby")
-def nearby(type: str, lat: float, lon: float):
+def nearby(type: str):
 
-    key = f"{type}-{lat}-{lon}"
+    data = {
+        "hospital": [
+            {"name": "Coimbatore Medical College Hospital", "lat": 11.0183, "lon": 76.9725},
+            {"name": "PSG Hospitals", "lat": 11.0188, "lon": 77.0038},
+            {"name": "KG Hospital", "lat": 11.0018, "lon": 76.9669},
+            {"name": "GEM Hospital", "lat": 11.0012, "lon": 77.0124},
+            {"name": "Kongunad Hospital", "lat": 11.0197, "lon": 76.9554},
+            {"name": "Royal Care Super Speciality Hospital", "lat": 11.0409, "lon": 77.0399},
+            {"name": "KMCH Hospital", "lat": 11.0420, "lon": 77.0405},
+            {"name": "Sri Ramakrishna Hospital", "lat": 11.0277, "lon": 76.9447}
+        ],
 
-    if key in cache:
-        return cache[key]
+        "police": [
+            {"name": "Race Course Police Station", "lat": 11.0027, "lon": 76.9698},
+            {"name": "Peelamedu Police Station", "lat": 11.0287, "lon": 77.0025},
+            {"name": "Singanallur Police Station", "lat": 11.0007, "lon": 77.0263},
+            {"name": "Saibaba Colony Police Station", "lat": 11.0284, "lon": 76.9445},
+            {"name": "Katoor Police Station", "lat": 11.0155, "lon": 76.9728},
+            {"name": "B1 Bazaar Police Station", "lat": 10.9968, "lon": 76.9624},
+            {"name": "R.S. Puram Police Station", "lat": 11.0093, "lon": 76.9485}
+        ],
 
-    tag_map = {
-        "hospital": "amenity=hospital",
-        "police": "amenity=police",
-        "fire": "amenity=fire_station",
-        "water": "office=water_utility",
-        "waste": "amenity=waste_disposal"
+        "fire": [
+            {"name": "Coimbatore South Fire Station", "lat": 11.0034, "lon": 76.9675},
+            {"name": "Peelamedu Fire Station", "lat": 11.0259, "lon": 77.0062},
+            {"name": "Koundampalayam Fire Station", "lat": 11.0505, "lon": 76.9403},
+            {"name": "Singanallur Fire Station", "lat": 11.0034, "lon": 77.0261}
+        ],
+
+        "water": [
+            {"name": "TWAD Board Regional Office", "lat": 11.0245, "lon": 76.9496},
+            {"name": "Coimbatore Corporation Water Supply Office", "lat": 11.0017, "lon": 76.9625},
+            {"name": "Siruvani Water Supply Office", "lat": 10.9980, "lon": 76.9558}
+        ],
+
+        "waste": [
+            {"name": "Dharani Recyclers", "lat": 11.0164, "lon": 76.9678},
+            {"name": "Pick My Scraps", "lat": 10.9417, "lon": 76.9688},
+            {"name": "Nothing Is Waste", "lat": 10.9656, "lon": 76.9551},
+            {"name": "Coimbatore Corporation Solid Waste Yard", "lat": 11.0148, "lon": 76.9832}
+        ]
     }
 
-    tag = tag_map.get(type, "amenity=hospital")
-
-    query = f"""
-    [out:json];
-    (
-      node[{tag}]({lat-0.05},{lon-0.05},{lat+0.05},{lon+0.05});
-      way[{tag}]({lat-0.05},{lon-0.05},{lat+0.05},{lon+0.05});
-      relation[{tag}]({lat-0.05},{lon-0.05},{lat+0.05},{lon+0.05});
-    );
-    out center;
-    """
-
-    try:
-        headers = {
-            "User-Agent": "LocalPulse/1.0 (contact@example.com)"
-        }
-
-        res = requests.post(
-            "https://overpass-api.de/api/interpreter",
-            data=query,
-            headers=headers,
-            timeout=15
-        )
-
-        data = res.json()
-
-        result = []
-
-        for e in data["elements"]:
-            lat2 = e.get("lat") or e.get("center", {}).get("lat")
-            lon2 = e.get("lon") or e.get("center", {}).get("lon")
-
-            if lat2 and lon2:
-                result.append({
-                    "lat": lat2,
-                    "lon": lon2,
-                    "name": e.get("tags", {}).get("name", "Unknown")
-                })
-
-        cache[key] = result
-        return result
-
-    except Exception:
-        return []
-
+    return data.get(type.lower(), [])
 
 # =========================================================
 # 🆕 SEARCH API (USED BY SEARCH BAR IN FLUTTER)
